@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APB Ballers 2025 数据分析</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+:root { --bg:#f8fafc; --card:#ffffff; --card-hover:#f1f5f9; --border:rgba(99,102,241,0.15); --text:#1e293b; --text2:#64748b; --purple:#6366f1; --purple-light:#818cf8; --green:#22c55e; --yellow:#eab308; --red:#ef4444; --orange:#f97316; --blue:#3b82f6; }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Hiragino Sans GB',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.wrap{max-width:1440px;margin:0 auto;padding:24px 20px}
+.header{text-align:center;padding:60px 20px 50px;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border-radius:20px;margin-bottom:28px;box-shadow:0 10px 40px rgba(102,126,234,0.25)}
+.header-content{position:relative;z-index:1}
+.header .logo{font-size:4em;margin-bottom:8px;text-shadow:3px 3px 6px rgba(0,0,0,0.3)}
+.header .title{font-size:2.8em;font-weight:800;color:#fff;margin-bottom:12px;text-shadow:2px 2px 4px rgba(0,0,0,0.2);letter-spacing:2px}
+.header .subtitle{font-size:1.3em;color:rgba(255,255,255,0.95);margin-bottom:20px;font-weight:500}
+.header .season-info{display:flex;justify-content:center;gap:40px;margin-top:24px;flex-wrap:wrap}
+.header .info-item{color:#fff;font-size:0.95em}
+.header .info-item .label{opacity:0.85;font-size:0.9em;margin-bottom:4px}
+.header .info-item .value{font-size:1.8em;font-weight:700;text-shadow:2px 2px 4px rgba(0,0,0,0.2)}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-bottom:32px}
+.card{background:var(--card);border-radius:16px;padding:28px;border:1px solid var(--border);position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.card:nth-child(1)::before{background:linear-gradient(90deg,var(--purple),var(--purple-light))}
+.card:nth-child(2)::before{background:linear-gradient(90deg,var(--green),#34d399)}
+.card:nth-child(3)::before{background:linear-gradient(90deg,var(--orange),#fb923c)}
+.card:nth-child(4)::before{background:linear-gradient(90deg,var(--blue),#60a5fa)}
+.card .ic{font-size:2.2em;margin-bottom:14px}
+.card .lb{font-size:.85em;color:var(--text2);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px;font-weight:600}
+.card .vl{font-size:3em;font-weight:800;line-height:1;color:var(--text)}
+.card .sb{font-size:.9em;color:var(--text2);margin-top:10px}
+.rbar{display:flex;height:8px;border-radius:4px;overflow:hidden;margin-top:12px;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
+.rbar .w{background:linear-gradient(90deg,var(--green),#34d399)} .rbar .d{background:linear-gradient(90deg,var(--yellow),#fbbf24)} .rbar .l{background:linear-gradient(90deg,var(--red),#f87171)}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-bottom:32px}
+.cbox{background:var(--card);border-radius:18px;padding:28px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.cbox h3{color:var(--text);font-size:1em;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:20px;font-weight:700;display:flex;align-items:center;gap:8px}
+.cc{position:relative;height:480px}
+.boards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-bottom:32px}
+.board{background:var(--card);border-radius:18px;padding:32px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.board h3{font-size:1.3em;margin-bottom:24px;display:flex;align-items:center;gap:10px;color:var(--text);font-weight:700}
+table{width:100%;border-collapse:collapse}
+th{padding:14px 16px;text-align:left;color:var(--text2);font-size:.8em;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid var(--border);font-weight:700}
+td{padding:16px;border-bottom:1px solid rgba(0,0,0,0.06);font-size:.95em}
+tr:hover td{background:rgba(99,102,241,0.04)}
+.pn{font-weight:700;color:var(--text)} .hl{font-weight:800;color:var(--purple);font-size:1.1em}
+.rb{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;font-weight:800;font-size:.85em;box-shadow:0 2px 6px rgba(0,0,0,0.15)}
+.r1{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000}
+.r2{background:linear-gradient(135deg,#d1d5db,#9ca3af);color:#000}
+.r3{background:linear-gradient(135deg,#d97706,#b45309);color:#fff}
+.ro{background:rgba(99,102,241,0.15);color:var(--text)}
+.sec{background:var(--card);border-radius:18px;padding:32px;margin-bottom:32px;border:1px solid var(--border);box-shadow:0 2px 8px rgba(0,0,0,0.06)}
+.sec h2{font-size:1.5em;margin-bottom:24px;display:flex;align-items:center;gap:12px;color:var(--text);font-weight:800}
+.res{display:inline-block;padding:6px 14px;border-radius:8px;font-weight:700;font-size:.85em}
+.rw{background:rgba(34,197,94,.15);color:#16a34a;border:1px solid rgba(34,197,94,.3)}
+.rd{background:rgba(234,179,8,.15);color:#ca8a04;border:1px solid rgba(234,179,8,.3)}
+.rl{background:rgba(239,68,68,.15);color:#dc2626;border:1px solid rgba(239,68,68,.3)}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}.cgrid,.boards{grid-template-columns:1fr}}
+@media(max-width:500px){.cards{grid-template-columns:1fr}.header h1{font-size:2em}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="header">
+<div class="header-content">
+    <div class="logo">⚽</div>
+    <h1 class="title">APB PRIME BALLERS</h1>
+    <p class="subtitle">2025 赛季年度总结与回顾</p>
+    <div class="season-info">
+        <div class="info-item">
+            <div class="label">比赛场次</div>
+            <div class="value">13</div>
+        </div>
+        <div class="info-item">
+            <div class="label">战绩</div>
+            <div class="value">6胜3平4负</div>
+        </div>
+        <div class="info-item">
+            <div class="label">总进球</div>
+            <div class="value">66</div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="cards" id="cards"></div>
+<div class="cgrid">
+<div class="cbox"><h3>📊 比赛战绩</h3><div class="cc"><canvas id="c1"></canvas></div></div>
+<div class="cbox"><h3>📈 进失球趋势</h3><div class="cc"><canvas id="c2"></canvas></div></div>
+<div class="cbox"><h3>🎯 射手榜</h3><div class="cc"><canvas id="c3"></canvas></div></div>
+<div class="cbox"><h3>👟 助攻榜</h3><div class="cc"><canvas id="c4"></canvas></div></div>
+</div>
+<div class="boards">
+<div class="board"><h3>🥇 射手榜 TOP 8</h3><div id="tb1"></div></div>
+<div class="board"><h3>🅰️ 助攻榜 TOP 8</h3><div id="tb2"></div></div>
+<div class="board"><h3>📋 出勤榜 TOP 8</h3><div id="tb3"></div></div>
+</div>
+<div class="sec"><h2>📅 比赛记录</h2><p style="color:var(--text2);font-size:0.9em;margin-bottom:16px">💡 点击任意比赛行查看该场比赛的球员详细数据</p><div id="gt"></div></div>
+<div class="sec"><h2>👥 全部球员数据</h2><div id="ap"></div></div>
+</div>
+<script>
+Chart.register(ChartDataLabels);
+
+const S = {total_games:13,total_goals:66,total_assists:36,total_conceded:58,net_goals:8,wins:6,draws:3,losses:4,win_rate:46.2,avg_goals:5.08,avg_assists:2.77,avg_conceded:4.46,total_players:35};
+
+const G = [
+  {d:"2025-02-24",vs:"BV",gf:6,ga:7,a:4,r:"负",n:"正赛",att:14,players:[
+    {n:"跃进",g:2,a:0},{n:"Ryan",g:2,a:0},{n:"Steve",g:1,a:0},{n:"Charles Chen",g:1,a:0},{n:"Alex",g:0,a:3},{n:"Xu Zhemin",g:0,a:1},{n:"jinny",g:0,a:0},{n:"Dean",g:0,a:0},{n:"Alan",g:0,a:0},{n:"Macro",g:0,a:0},{n:"Don",g:0,a:0},{n:"Feng (Alan)",g:0,a:0},{n:"Kaka",g:0,a:0},{n:"Taft",g:0,a:0}
+  ]},
+  {d:"2025-03-10",vs:"Flexport",gf:2,ga:3,a:1,r:"负",n:"正赛",att:16,players:[
+    {n:"Alex",g:1,a:0},{n:"Chris",g:1,a:0},{n:"Charles Chen",g:0,a:1},{n:"jinny",g:0,a:0},{n:"Kevin",g:0,a:0},{n:"Xu Zhemin",g:0,a:0},{n:"Inzaghi",g:0,a:0},{n:"Dean",g:0,a:0},{n:"Steve",g:0,a:0},{n:"Alpha JC",g:0,a:0},{n:"Alan Y",g:0,a:0},{n:"Ryan",g:0,a:0},{n:"Macro",g:0,a:0},{n:"Kaka",g:0,a:0},{n:"Feng (Alan)",g:0,a:0},{n:"Jack Hu",g:0,a:0}
+  ]},
+  {d:"2025-04-14",vs:"Flexport",gf:5,ga:1,a:2,r:"胜",n:"正赛",att:14,players:[
+    {n:"Kevin",g:1,a:0},{n:"Ryan",g:1,a:1},{n:"Xu Zhemin",g:1,a:0},{n:"jinny",g:1,a:0},{n:"彬哥",g:1,a:0},{n:"Don",g:0,a:1},{n:"jinny",g:0,a:0},{n:"Charles Chen",g:0,a:0},{n:"Marco",g:0,a:0},{n:"Alan Y",g:0,a:0},{n:"Alex",g:0,a:0},{n:"Steve",g:0,a:0},{n:"Dean",g:0,a:0},{n:"Jack",g:0,a:0},{n:"Andy",g:0,a:0}
+  ]},
+  {d:"2025-05-12",vs:"Device",gf:9,ga:9,a:1,r:"平",n:"热身赛",att:13,players:[
+    {n:"周宇",g:5,a:0},{n:"Ryan",g:2,a:0},{n:"跃进",g:1,a:0},{n:"Inzaghi",g:1,a:1},{n:"jinny",g:0,a:0},{n:"Kevin",g:0,a:0},{n:"Chris",g:0,a:0},{n:"Lian",g:0,a:0},{n:"Alan Y",g:0,a:0},{n:"Charles Chen",g:0,a:0},{n:"Winston",g:0,a:0},{n:"Taft",g:0,a:0},{n:"Jeff Liu",g:0,a:0}
+  ]},
+  {d:"2025-05-26",vs:"Korean",gf:5,ga:8,a:3,r:"负",n:"正赛",att:14,players:[
+    {n:"Winston",g:2,a:0},{n:"Kevin",g:1,a:0},{n:"Don",g:1,a:0},{n:"Ryan",g:1,a:1},{n:"Xu Zhemin",g:0,a:1},{n:"Andy",g:0,a:1},{n:"jinny",g:0,a:0},{n:"Dean",g:0,a:0},{n:"Lian",g:0,a:0},{n:"Inzaghi",g:0,a:0},{n:"tao",g:0,a:0},{n:"Alan Y",g:0,a:0},{n:"Jack",g:0,a:0},{n:"跃进",g:0,a:0}
+  ]},
+  {d:"2025-06-09",vs:"BV",gf:6,ga:6,a:4,r:"平",n:"正赛",att:15,players:[
+    {n:"周宇",g:3,a:1},{n:"jinny",g:1,a:0},{n:"Inzaghi",g:1,a:0},{n:"Chris",g:1,a:0},{n:"Ryan",g:0,a:1},{n:"Alex",g:0,a:1},{n:"Charles Chen",g:0,a:1},{n:"Xu Zhemin",g:0,a:0},{n:"Kevin",g:0,a:0},{n:"Andy",g:0,a:0},{n:"Macro",g:0,a:0},{n:"Don",g:0,a:0},{n:"William",g:0,a:0},{n:"Lian",g:0,a:0},{n:"Dean",g:0,a:0}
+  ]},
+  {d:"2025-06-23",vs:"Flexport",gf:2,ga:2,a:1,r:"平",n:"正赛",att:15,players:[
+    {n:"Kevin",g:1,a:0},{n:"周宇",g:1,a:0},{n:"跃进",g:0,a:1},{n:"Xu Zhemin",g:0,a:0},{n:"jinny",g:0,a:0},{n:"Ryan",g:0,a:0},{n:"Alex",g:0,a:0},{n:"Andy",g:0,a:0},{n:"Baker",g:0,a:0},{n:"Inzaghi",g:0,a:0},{n:"Alan Y",g:0,a:0},{n:"Charles Chen",g:0,a:0},{n:"Macro",g:0,a:0},{n:"Dean",g:0,a:0},{n:"Don",g:0,a:0}
+  ]},
+  {d:"2025-07-28",vs:"Flexport",gf:1,ga:0,a:1,r:"胜",n:"暴雨中断",att:9,players:[
+    {n:"Xu Zhemin",g:1,a:0},{n:"Winston",g:0,a:1},{n:"jinny",g:0,a:0},{n:"Andy",g:0,a:0},{n:"Baker",g:0,a:0},{n:"Steve",g:0,a:0},{n:"跃进",g:0,a:0},{n:"Alex",g:0,a:0},{n:"Ryan",g:0,a:0}
+  ]},
+  {d:"2025-08-18",vs:"伯爵筋肉人",gf:8,ga:6,a:11,r:"胜",n:"正赛",att:9,players:[
+    {n:"周宇",g:4,a:1},{n:"Inzaghi",g:1,a:1},{n:"Ryan",g:1,a:2},{n:"Tiger",g:1,a:0},{n:"陈宇",g:1,a:0},{n:"跃进",g:0,a:4},{n:"Chris",g:0,a:2},{n:"Dean",g:0,a:1},{n:"jinny",g:0,a:1}
+  ]},
+  {d:"2025-09-15",vs:"BV",gf:4,ga:6,a:1,r:"负",n:"正赛",att:17,players:[
+    {n:"周宇",g:3,a:0},{n:"Chris",g:1,a:0},{n:"Kevin",g:0,a:1},{n:"jinny",g:0,a:0},{n:"Jeff Liu",g:0,a:0},{n:"跃进",g:0,a:0},{n:"Charles Chen",g:0,a:0},{n:"Ryan",g:0,a:0},{n:"Andy",g:0,a:0},{n:"Dean",g:0,a:0},{n:"Don",g:0,a:0},{n:"Macro",g:0,a:0},{n:"Inzaghi",g:0,a:0},{n:"Jack Hu",g:0,a:0},{n:"Alex",g:0,a:0},{n:"Tommy Kwok",g:0,a:0},{n:"Winston",g:0,a:0}
+  ]},
+  {d:"2025-10-13",vs:"魅女女足",gf:4,ga:2,a:4,r:"胜",n:"正赛",att:16,players:[
+    {n:"Winston",g:2,a:0},{n:"Kevin",g:1,a:0},{n:"周宇",g:1,a:0},{n:"jinny",g:0,a:2},{n:"Ryan",g:0,a:1},{n:"Don",g:0,a:1},{n:"跃进",g:0,a:0},{n:"Charles Chen",g:0,a:0},{n:"Inzaghi",g:0,a:0},{n:"Macro",g:0,a:0},{n:"Dean",g:0,a:0},{n:"Jeff Liu",g:0,a:0},{n:"cliff",g:0,a:0},{n:"Kaka",g:0,a:0},{n:"Lian",g:0,a:0},{n:"Jack Hu",g:0,a:0}
+  ]},
+  {d:"2025-12-08",vs:"内部友谊赛",gf:10,ga:5,a:0,r:"胜",n:"内部友谊赛",att:15,players:[
+    {n:"周宇",g:6,a:0},{n:"Kevin",g:3,a:0},{n:"jinny",g:1,a:0},{n:"Ryan",g:1,a:0},{n:"Don",g:1,a:0},{n:"Alex",g:1,a:0},{n:"Jack Hu",g:1,a:0},{n:"Dean",g:0,a:0},{n:"Charles Chen",g:0,a:0},{n:"Macro",g:0,a:0},{n:"跃进",g:0,a:0},{n:"Jeff Liu",g:0,a:0},{n:"Xu Zhemin",g:0,a:0},{n:"Andy",g:0,a:0},{n:"Winston",g:0,a:0}
+  ]},
+  {d:"2026-01-27",vs:"Flexport",gf:4,ga:3,a:4,r:"胜",n:"正赛",att:12,players:[
+    {n:"Kevin",g:1,a:0},{n:"跃进",g:1,a:1},{n:"Xu Zhemin",g:1,a:1},{n:"Baker",g:1,a:0},{n:"Don",g:0,a:1},{n:"Charles Chen",g:0,a:1},{n:"jinny",g:0,a:0},{n:"Andy",g:0,a:0},{n:"Macro",g:0,a:0},{n:"周宇",g:0,a:0},{n:"Alex",g:0,a:0},{n:"Ryan",g:0,a:0}
+  ]}
+];
+
+// 数据已全面核对CSV文件
+// 射手榜 - 所有有进球的球员
+const scorers = [
+  ["周宇",23,8],["Ryan",8,13],["Kevin",8,10],["跃进",4,10],
+  ["Winston",4,6],["jinny",3,13],["Xu Zhemin",3,9],["Inzaghi",3,8],
+  ["Chris",3,5],["Alex",2,9],["Don",2,9],["Charles Chen",1,10],
+  ["Steve",1,4],["Jack Hu",1,4],["彬哥",1,1],["Baker",1,3],
+  ["Tiger",1,1],["陈宇",1,1]
+];
+// 助攻榜 - 所有有助攻的球员
+const assists = [
+  ["Ryan",6,13],["跃进",5,10],["Alex",4,9],["jinny",3,13],
+  ["Charles Chen",3,10],["Xu Zhemin",3,9],["Don",3,9],["周宇",3,8],
+  ["Inzaghi",2,8],["Chris",2,5],["Dean",1,10],["Andy",1,8],["Winston",1,6],["Kevin",1,10]
+];
+// 出勤榜 TOP 8：jinny排在Ryan前面
+const attend = [
+  ["jinny",13,3,3],["Ryan",13,8,6],["跃进",10,4,5],["Kevin",10,8,1],
+  ["Charles Chen",10,1,3],["Dean",10,0,1],["Xu Zhemin",9,3,3],["Alex",9,2,4]
+];
+const allP = [
+  ["周宇",23,3,8],["Ryan",8,6,13],["跃进",4,5,10],["Kevin",8,1,10],
+  ["Winston",4,1,6],["jinny",3,3,13],["Xu Zhemin",3,3,9],["Alex",2,4,9],
+  ["Chris",3,2,5],["Inzaghi",3,2,8],["Don",2,3,9],["Charles Chen",1,3,10],
+  ["Steve",1,0,4],["Jack Hu",1,0,4],["彬哥",1,0,1],["Baker",1,0,3],
+  ["Tiger",1,0,1],["陈宇",1,0,1],["Dean",0,1,10],["Andy",0,1,9],
+  ["Macro",0,0,8],["Alan Y",0,0,5],["Lian",0,0,4],["Jeff Liu",0,0,4],
+  ["Kaka",0,0,3],["Feng (Alan)",0,0,2],["Taft",0,0,2],["Jack",0,0,2],
+  ["Alan",0,0,1],["Alpha JC",0,0,1],["Marco",0,0,1],["tao",0,0,1],
+  ["William",0,0,1],["Tommy Kwok",0,0,1],["cliff",0,0,1]
+];
+
+document.addEventListener('DOMContentLoaded', function(){
+  // Cards
+  document.getElementById('cards').innerHTML = `
+    <div class="card"><div class="ic">🏟️</div><div class="lb">总场次</div><div class="vl">${S.total_games}</div><div class="sb">${S.wins}胜 ${S.draws}平 ${S.losses}负</div><div class="rbar"><div class="w" style="width:${S.wins/S.total_games*100}%"></div><div class="d" style="width:${S.draws/S.total_games*100}%"></div><div class="l" style="width:${S.losses/S.total_games*100}%"></div></div></div>
+    <div class="card"><div class="ic">⚽</div><div class="lb">总进球</div><div class="vl">${S.total_goals}</div><div class="sb">场均 ${S.avg_goals} 球</div></div>
+    <div class="card"><div class="ic">🅰️</div><div class="lb">总助攻</div><div class="vl">${S.total_assists}</div><div class="sb">场均 ${S.avg_assists} 次</div></div>
+    <div class="card"><div class="ic">📊</div><div class="lb">场均进球</div><div class="vl">${S.avg_goals}</div><div class="sb">净胜球 +${S.net_goals} | 失球 ${S.total_conceded}</div></div>`;
+
+  // Chart defaults
+  Chart.defaults.color = '#94a3b8';
+  Chart.defaults.font.family = '-apple-system,BlinkMacSystemFont,"PingFang SC"';
+
+  // 战绩饼图 - 数据标签直接显示
+  new Chart(document.getElementById('c1'),{
+    type:'doughnut',
+    data:{labels:[`胜 ${S.wins}场`,`平 ${S.draws}场`,`负 ${S.losses}场`],datasets:[{data:[S.wins,S.draws,S.losses],backgroundColor:['#22c55e','#eab308','#ef4444'],borderWidth:3,borderColor:'#1a1f3a',hoverOffset:12}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
+      plugins:{legend:{position:'bottom',labels:{padding:16,font:{size:13},color:'#94a3b8'}},
+        datalabels:{color:'#fff',font:{weight:'bold',size:18},formatter:function(v){return v+'场';}}}}
+  });
+
+  // 进失球趋势 - 数据标签直接显示在点上
+  new Chart(document.getElementById('c2'),{
+    type:'line',
+    data:{labels:G.map(x=>x.vs),datasets:[
+      {label:'进球',data:G.map(x=>x.gf),borderColor:'#6366f1',backgroundColor:'rgba(99,102,241,.15)',fill:true,tension:.4,pointRadius:6,pointBackgroundColor:'#6366f1',pointBorderColor:'#1a1f3a',pointBorderWidth:2,pointHoverRadius:8},
+      {label:'失球',data:G.map(x=>x.ga),borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.15)',fill:true,tension:.4,pointRadius:6,pointBackgroundColor:'#ef4444',pointBorderColor:'#1a1f3a',pointBorderWidth:2,pointHoverRadius:8}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{labels:{padding:12,color:'#94a3b8'}},datalabels:{align:'top',offset:6,font:{weight:'bold',size:12},color:function(ctx){return ctx.datasetIndex===0?'#818cf8':'#f87171';}}},
+      scales:{x:{ticks:{font:{size:11},color:'#64748b'},grid:{color:'rgba(99,102,241,.1)'}},y:{beginAtZero:true,grid:{color:'rgba(99,102,241,.1)'},ticks:{color:'#64748b'}}}}
+  });
+
+  // 射手榜柱状图 - 显示所有有进球的球员
+  const maxGoal = Math.max(...scorers.map(x=>x[1]));
+  new Chart(document.getElementById('c3'),{
+    type:'bar',
+    data:{labels:scorers.map(x=>x[0]),datasets:[{data:scorers.map(x=>x[1]),backgroundColor:'rgba(99,102,241,.7)',borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},datalabels:{anchor:'end',align:'end',color:'#1e293b',font:{weight:'bold',size:12}}},
+      scales:{x:{beginAtZero:true,max:maxGoal+2,grid:{color:'rgba(0,0,0,.06)'}},y:{ticks:{font:{size:11}},grid:{display:false}}}}
+  });
+
+  // 助攻榜柱状图 - 显示所有有助攻的球员
+  const maxAssist = Math.max(...assists.map(x=>x[1]));
+  new Chart(document.getElementById('c4'),{
+    type:'bar',
+    data:{labels:assists.map(x=>x[0]),datasets:[{data:assists.map(x=>x[1]),backgroundColor:'rgba(34,197,94,.7)',borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},datalabels:{anchor:'end',align:'end',color:'#1e293b',font:{weight:'bold',size:12}}},
+      scales:{x:{beginAtZero:true,max:maxAssist+1,grid:{color:'rgba(0,0,0,.06)'}},y:{ticks:{font:{size:11}},grid:{display:false}}}}
+  });
+
+  // 射手榜表格 - TOP 8
+  let h1='<table><thead><tr><th>#</th><th>球员</th><th>进球</th><th>出场</th></tr></thead><tbody>';
+  scorers.slice(0,8).forEach(([n,g,ap],i)=>{const rc=i<3?'r'+(i+1):'ro';h1+=`<tr><td><span class="rb ${rc}">${i+1}</span></td><td class="pn">${n}</td><td class="hl">${g}</td><td>${ap}</td></tr>`;});
+  document.getElementById('tb1').innerHTML=h1+'</tbody></table>';
+
+  // 助攻榜表格 - TOP 8
+  let h2='<table><thead><tr><th>#</th><th>球员</th><th>助攻</th><th>出场</th></tr></thead><tbody>';
+  assists.slice(0,8).forEach(([n,a,ap],i)=>{const rc=i<3?'r'+(i+1):'ro';h2+=`<tr><td><span class="rb ${rc}">${i+1}</span></td><td class="pn">${n}</td><td class="hl">${a}</td><td>${ap}</td></tr>`;});
+  document.getElementById('tb2').innerHTML=h2+'</tbody></table>';
+
+  // 出勤榜表格 - TOP 8
+  let h3='<table><thead><tr><th>#</th><th>球员</th><th>出场</th><th>进球</th><th>助攻</th></tr></thead><tbody>';
+  attend.forEach(([n,ap,g,a],i)=>{const rc=i<3?'r'+(i+1):'ro';h3+=`<tr><td><span class="rb ${rc}">${i+1}</span></td><td class="pn">${n}</td><td class="hl">${ap}</td><td>${g}</td><td>${a}</td></tr>`;});
+  document.getElementById('tb3').innerHTML=h3+'</tbody></table>';
+
+  // 比赛记录
+  let hg='<table><thead><tr><th>场次</th><th>日期</th><th>对手</th><th>比分</th><th>助攻</th><th>出勤</th><th>结果</th><th>备注</th></tr></thead><tbody>';
+  G.forEach((m,i)=>{
+    const c=m.r==='胜'?'rw':m.r==='负'?'rl':'rd';
+    hg+=`<tr onclick="togglePlayers(${i})" style="cursor:pointer"><td>#${i+1}</td><td>${m.d}</td><td>${m.vs}</td><td><strong>${m.gf} : ${m.ga}</strong></td><td>${m.a}</td><td>${m.att}人</td><td><span class="res ${c}">${m.r}</span></td><td>${m.n}</td></tr>`;
+    hg+=`<tr id="players-${i}" style="display:none"><td colspan="8" style="background:rgba(99,102,241,0.05);padding:20px"><div style="max-width:100%;overflow-x:auto"><table style="width:100%;margin:0"><thead><tr><th>球员</th><th>进球</th><th>助攻</th></tr></thead><tbody>`;
+    m.players.forEach(p=>{
+      if(p.g>0||p.a>0){
+        hg+=`<tr><td class="pn">${p.n}</td><td>${p.g>0?'⚽ '+p.g:'-'}</td><td>${p.a>0?'🅰️ '+p.a:'-'}</td></tr>`;
+      }
+    });
+    m.players.forEach(p=>{
+      if(p.g===0&&p.a===0){
+        hg+=`<tr><td class="pn">${p.n}</td><td>-</td><td>-</td></tr>`;
+      }
+    });
+    hg+=`</tbody></table></div></td></tr>`;
+  });
+  document.getElementById('gt').innerHTML=hg+'</tbody></table>';
+
+  // 全部球员
+  let ha='<table><thead><tr><th>#</th><th>球员</th><th>进球</th><th>助攻</th><th>出场</th></tr></thead><tbody>';
+  allP.forEach(([n,g,a,ap],i)=>{const rc=i<3?'r'+(i+1):'ro';ha+=`<tr><td><span class="rb ${rc}">${i+1}</span></td><td class="pn">${n}</td><td>${g}</td><td>${a}</td><td>${ap}</td></tr>`;});
+  document.getElementById('ap').innerHTML=ha+'</tbody></table>';
+});
+
+function togglePlayers(idx){
+  const el=document.getElementById('players-'+idx);
+  el.style.display=el.style.display==='none'?'table-row':'none';
+}
+</script>
+</body>
+</html>
